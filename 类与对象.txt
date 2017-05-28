@@ -1,0 +1,539 @@
+1.main()的两种用途：
+    测试真正的类
+    启动java应用程序
+2.变量的两种类型：primitive和引用变量
+3.对象存储在堆上，当没有引用指向对象时，对象会被回收。
+4.java是通过值传递的，也就是通过拷贝传递。
+5.类的实例变量总是有默认值，integer:0,floating points:0.0,booleans:false,references:null
+6.实例变量与局部变量的区别：
+    实例变量在类中声明，局部变量在方法中声明。
+    局部变量在使用前必须初始化，否则编译报错。
+7.变量的比较：
+    primitive主数据类型使用==来比较。
+    使用==来判别两个引用是否指向同一个对象。
+    使用equals来比较两个对象是否在意义上相等。
+8.Math.random(),产生0-1之间的随机浮点数。
+9.加强版for(String name: nameArray){}
+10. ArrayList类(java.util.*)
+    ArrayList<Egg> mylist = new ArrayList<Egg>();
+    Egg s=new Egg();
+    myList.add(s);
+    int size = myList.size();
+    boolean isIn = myList.contains(s);
+    int idx = myList.indexOf(b);
+    boolean empty = myList.isEmpty();
+    myList.remove(s);
+11.在java的API中，类是被包装在包中，要使用API中的类，你必须把它
+    放在哪个包中。
+12. javax中的x代表什么？
+    所有随附java的类都是放在java开头的包中，如:java.lang,java.io
+    java.util等。
+    后来出现了一些没有包含在标准函数库中的包。这些被称为扩展的类
+    有两种类型：标准与非标准的。Sun认可的称为standard extension,其余实验性质的非标准类不一定会被认可。
+    标准版的扩展都以javax作为包名称的开头
+
+13.继承层次中的方法调用顺序：
+    当调用对象引用的方法时，会调用到与该对象类型最接近的方法。
+    也就是最低阶的会胜出！
+    java虚拟机会从低阶开始找寻方法，如果找不到它会往上寻找，直到找到为止。
+14.子类引用父类的方法：
+    public void roam(){
+        super.roam();
+        //my own roam stuff
+    }
+15.存取权限：private,default,protected,public
+    类中public的成员会继承
+    类中private的成员不会继承
+    default同一包中可见
+    protected和父类不在同一个包中的子类可以继承父类中的protected成员
+    同时提供default存取权限
+16.不仅引用变量可以多态，参数，返回类型也可以多态
+
+17.能够继承任意的类吗？是否有私有类的概念?
+    有内部类，没有私有类的概念。但是有三种方法防止某个类被作出子类。
+    a.不标记为public的类只能被同一个包的类作出子类。
+    b.使用final修饰类，说明不能被继承。
+    c.让类只拥有private的构造函数
+17.1 内部类一般实现一个抽象方法或者接口，比如Thread类：
+    Thread t = new Thread(){
+        public void run(){
+            //code    
+        }
+    }
+17.2 内部类：
+   17.2.1 内部类允许你将逻辑相关的类组织在一起，并控制内部类的可视性，内部类了解外围类，并能与之通信。 
+    17.2.2 如果想从外部类的非静态方法之外的任意位置创建某个内部类的对象，必须具体指明这个对象的类型，OuterClassName.InnerClassName
+    17.2.3 外部类对象引用OutClassName.this,创建内部类对象:
+        OutClassName out = new OutClassName();
+        OutClassName.InnerClassName in = out.InnerClassName();
+
+18.final类可以确保方法都是你写的版本。
+19.可以用final修饰某个方法，防止被覆盖。
+20.覆盖的规则：
+    参数必须要一样，且返回类型必须要兼容
+    不能降低方法的权限
+21.方法的重载
+    必须使用不同的参数。
+    返回类型可以不同
+    不能只改变返回类型。
+    可以更改存取权限
+22.抽象类：
+    有些类不应该被初始化，创建出wolf对象或tiger对象是合理的，但是创建
+    animal对象就怪怪的。
+    当需要一个类来继承和产生多态，但是要限制只有它的子类才能被初始化，
+    可以申明这个类为抽象类。
+    abstract class Tiger extends Animal{
+        public void roam(){}
+    }
+    抽象类可以带有抽象和非抽象的方法,可以通过抽象机制将实现负担转给下层
+    抽象类可以申明为引用类型给多态使用。
+    抽象类除了被继承之外，没有用途，没有值。抽象类可以有static成员。
+
+23.抽象方法：
+    将方法申明为abstract.抽象类代表此类必须要被extends,抽象方法代表此方法一定要被覆盖。因为某些行为在没有特定的运行时不会有任何
+    意义，也就是没有通用的实现是可行的。
+    抽象方法没有方法体，因为编写抽象方法的程序代码没有意义。
+    如果声明出一个抽象的方法，就必须将类也标记为抽象的，不能在非抽象类中拥有抽象方法。
+    实现抽象的方法如同覆盖方法一样。
+24.终极对象(Object)有些什么：
+    判断对象是否相等：equals()
+    说明它是什么类：getClass()
+    产生哈希代码：hashCode()
+    对象的字符串表示：toString()
+    Object类不是抽象类，方法都有实现。
+    强烈建议用自己定的类去覆盖hashCode(),equals(),toString();
+    Object类是具体类，创建其对象就像创建Animal一样，感觉不合理，为什么要允许创建Object对象了？
+    因为有时就是需要一个通用的轻量化对象，如线程的同步。
+    为什么不将所有的参数和返回类型声明为Object类型？
+    因为java类型安全检查机制，不会意外地要求对象执行错误类型的动作。
+    当某个对象以Object来引用时，java会把它当作Object类型的实例，这代表你只能调用Object中声明的方法。
+    Object o = new Tiger();
+    o.roam();//非法，编译器是根据引用类型来判断有哪些方法可以调用，而不是根据确实的类型
+    java是类型检查很强的语言，编译器会检查你调用的确实是该对象可以响应的方法。也就是说，你只能从确实有这方法的类去调用。
+
+25. 接口的引入：
+    需要一种方法满足：
+    a.让某些行为只应用到特定对象上。
+    b.让特定的对象都有相同的方法定义。
+    c.可以运用多态
+    好像多重继承可以解决，但是多重继承会产生致命方块问题，而且java没有多重继承，所以引入了接口
+    接口解决致命方块的办法很简单：把全部的方法设为抽象的，如此一来，子类就得要实现此方法，因此 java虚拟机在执行期间就不会搞不清楚要用哪一个版本。
+    java的接口就是100%的纯抽象类，所有接口的方法都是抽象的。
+    接口的定义：
+    public interface Pet {...}
+    接口的实现:
+    public class Dog extends Animal implements Pet {...}
+    接口的引入主要为了多态：
+        以接口取代具体的子类或抽象的父类作为参数或返回类型，可以传入任何有
+        实现该接口的东西，使用接口可以继承超过一个以上的来源。
+        当把一个类当作多态类型运用时，相同的类型必定来自同一个继承树，而且
+        必须是该多态的子类。
+        但是用接口来作为多态类型时，对象就可以来自任何地方了，唯一的条件就是
+        该对象必须实现此接口
+    一个类可以实现多个接口。
+
+26.如何判断应该设计类，子类，抽象类或接口呢？
+    a.如果新类无法对其他类通过IS-A测试时就设计不继承其他类的类
+    b.当需要某类的特殊化版本时，以覆盖或增加新的方法来继承现有的类
+    c.当需要定义一群类的模板，又不想让程序员初始化模板时，设计抽象类
+    d.如果要定义类扮演的角色，使用接口。（接口可以改变类的角色）
+27.子类调用父类的方法：super.roam();
+
+28.栈与堆：生存空间
+    对象的生存空间堆(heap)，方法调用及变量的生存空间栈(stack)
+    当java虚拟机启动时，它会底层的操作系统到得一块内存，并以此区段来执行java
+    程序。
+29.对象局部变量：
+    非primitive的变量只是保存对象的引用，不是对象本身，不论对象是否声明或创建，
+    如果局部变量是个对该对象的引用，只有变量本身会放在栈上。对象本身只会存在堆上。
+30.实例变量存在于对象所属的堆空间上。
+31. Duck myDuck = new Duck();看起来很像是在调用Duck()这个方法，并不是，而是
+    调用Dcuk的构造函数。
+    构造函数看起来很像方法，但它不是方法，而是初始化一个对象时执行的程序代码
+    唯一能调用构造函数的办法就是新建一个类。
+    构造函数与类名称相同，而且没有返回值。
+32.如何分辨构造函数和方法？
+    java可以有与类同名的方法而不会变成构造函数。其中的差别在于是否有返回类型。构造函数不会有返回类型。
+33.构造函数不会被继承
+    创建新对象时，所有继承链上的构造函数都会执行。
+    这代表每个父类都有一个构造函数（因为每个类至少都会有一个构造函数），且每个
+    构造函数都会在子类创建时期执行。就算是抽象的类也有构造函数，虽然你不能对
+    抽象的类执行new操作，但抽象的类还是父类，因此它的构造函数会在具体子类创建出实例时执行。
+    在构造函数中有super调用父类的构造函数部分，子类可能会根据父类的状态来继承方法(也就是父类的实例变量）
+    完整的对象需要也是完整的父类核心，这就是为什么父类构造函数必须执行的原因
+    。比如：就算Animal上有些变量是Tiger不会用到的，但Tiger可能会用到某些继承
+    的方法，而这些继承的方法必须读取Animal的实例变量。
+    构造函数在执行的时候，第一件事是去执行它的父类的构造函数，这个连锁反应到Object类为止。
+
+34.如果你写了一个有参数的构造函数，并且你需要一个没有参数的构造函数，则你必须自己动手写！
+35.如果类有一个以上的构造函数，则是参数一定要不一样。
+
+36.如何调用父类的构造函数？
+    public class Duck extends Animal {
+        int size;
+        public Duck(int newSize) {
+            super();//调用父类构造函数
+            size = newSize;
+        }
+    }
+    编译器有两种涉入构造函数的方法：
+    a.如果没有编写构造函数。
+        public ClassName() {
+            super();
+        }
+    b.如果你有构造函数但没有调用super()。
+        编译器会为你的每个重载版本的构造函数加上super()调用。
+        编译器加的一定是没有参数的版本。
+    对super()的调用必须是构造函数的第一个语句。
+    可以调用父类带参数的构造函数super(arguments);
+37.从某个构造函数调用重载版本的另一个构造函数this(),this(aString)
+    如果有某个重载版的构造函数除了不能处理不同类型的参数之外。可以处理所有的工作。
+    this就是对对象本身的引用。this()编译器不会默认调用。
+    this()只能用在构造函数中，且必须是第一行语句。
+    每个构造函数可以选择调用super()或this(),不能同时调用。
+    class Mini extends Car{
+        Color color;
+        public Mini(){
+            this.(Color.Red);
+        }
+        public Mini(Color c){
+            super("Mini");
+            color = c;
+        }
+        public Mini(int size){
+            //this(Color.Red);
+            //super(size); //不能同时调用
+        }
+    
+38.对象被GC回收的情况
+    a.引用变量永久性的离开它的范围。
+    b.引用被赋值到其他的对象上。
+    c.直接将引用设定为null
+
+40.java中没有东西是全局的，但存在：一种方法的行为不依靠实例变量，例如Math这个
+    类中所有的方法都不需要实例变量，因为这些方法都是静态的。
+41.java是面向对象的，但特殊情况下，通常是实用方法，则不需要类的实例。
+    static这个关键词可以标记不需要类实例的方法。
+    一个静态方法代表说“一种不依靠实例变量也就需要对象的行为”
+42.以类的名称调用静态方法，以引用变量调用静态方法，编译器还是解析出原来的类。以引用变量的名称调用非静态方法
+43.静态的方法不能调用非静态的变量，静态方法也不能调用非静态的方法
+44.静态变量被同类的所有实例共享。
+45.静态变量是在类被加载时初始化的。java虚拟机会加载某个类是因为第一次程序要
+    创建该类的亲实例，或是使用该类的静态方法或变量。
+    静态变量会在该类的任何对象创建之前就完成初始化。
+    静态变量会在该类的任何静态方法执行创建之前就完成初始化。
+    如果静态变量没有赋初值，它就会被设定默认值。就像实例变量一样
+46.静态的final变量（应该用大写字母）是常数。必须初始化。
+    声明的时候，静态初始化程序中。
+
+47.数字的格式化：
+    String.format()
+    
+48.自动装箱(autoboxing):
+    Integer i = new Integer(42);
+    i++;
+
+    Integer j = new Integer(50);
+    Integer k = j + 3;
+    
+    String s = "2";
+    int x = Integer.parseInt(s);
+
+    boolean b = new Boolean("true").booleanValue();
+
+    double d =42.5;
+    String doubleString = ""+d;
+    String doubleString = Double.toString(d);
+
+49.操作日期：
+    取得当前日期可以用java.util.Date,其他功能可以从Calendar上找。
+    用java.util.Calendar来操作日期，Calendar是一个抽象类，只能运用它的子类。
+    标准java API带有java.util.GregorianCalendar，通常不需要担心使用的是哪一种
+    Calendar的sub-class，只要专注于Calendar的方法就可以。
+    Calendar cal = new Calendar();//无法通过编译，Calendar是个抽象类。
+    要用这个静态的方法：
+    Calendar cal = Calendar.getInstance();
+
+50.编译器要确定你了解所调用的方法是有风险的，它只会注意你有没有表示你会注意到异常。
+51.方法可以抓住其他方法所抛出的异常，异常总是丢加给调用者。
+    会抛出异常的方法必须声明他可能这么做。
+52.编译器会核对每件事，除了RuntimeException之外，编译器保证：
+    a.如果你有抛出异常，则你一定要使用throw来声明这件事。
+    b.你调用会招聘异常的方法，你必须得确认你知道异常的可能性，将调用包在try/catch块中。或者ducking掉。
+53.异常处理：
+    try{
+        return;
+    }catch{
+        return;
+    }finally{
+        是否有异常都会执行,
+        try/catch有return,finally还是会执行，然后再回到retrun。
+    }
+54.只带有finally的try要声明异常
+    void go() throws FooException{
+        try{
+            x.do();
+        }finally{
+        }
+    }
+
+55. 存储对象状态的方式有很多种，可以根据如何使用存储下来的状态而决定。
+    a.如果只有自己写的java程序会用到，采用序列化(serialiazation)
+    b.数据需要被其他程序引用，用其他程序可以解析的特殊字符写到文件中。
+        例如用tab字符分隔
+54.将序列化对象写入文件，序列化步骤如下：
+	FileOutputStream fileStream = new FileOutputStream("a.dat");
+	ObjectOutputStream os = new ObjectOutputStream(fileStream);
+	os.writeObject(characterOne);
+	os.writeObject(characterTwo);
+	os.close();
+	当对象被序列化时，被该对象引用的实例变量也会被序列化，且所有被引用
+	的对象也会被序列化，这些操作都是自动进行的。
+55.如果要让类能够被序列化，就要实现Serializable接口。
+	Serializable接口被称为marker或tag类的标记接口，此接口并没有任何要实现
+	的方法，它唯一的目的就是说明实现它的类是可以被序列化的。
+	如果某类是可序列化的，则它的子类也自动地可以序列化。
+56.序列化是全有全无的。没有部分序列化	
+57.如果某个变量不需要被序列化，就将其标为transient.
+
+58.解序列化(deserialization):还原对象。
+	将对象序列化整件事情的重点在于你可以在事后，在不同的java虚拟机执行期
+	(甚至不是同一个java虚拟机)，反对象恢复到存储时的状态。
+	FileInputStream fileStream = new FileInputStream("a.dat");
+	ObjectInputStream os = new ObjectInputStream(fileStream);
+	Object one = os.readObject();
+	GameCharacter elf = (GameCharacter)one;
+	os.close();
+59.解序列化的过程：
+	a.对象从stream中读出来
+	b.java虚拟机通过存储的信息判断出对象的class类型。
+	c.java虚拟机尝试寻找和加载对象的类。找不到或者无法加载抛出异常。
+	d.新的对象会被配置在堆上，但构造函数不会执行，回为执行构造函数
+		意味着对象的状态会被抹去又变成全新的。
+	e.如果对象继承树上有一个不可序列化的祖先类，则该不可序列化的类以及
+		在它之上的类的构造函数(就算是可序列化也一样)会被执行。
+		也就是说，从第一个不可序列化的父类开始，全部重新回到初始状态。
+	f.对象的实例变量会被还原成序列化时的状态值，transient变量会被赋值
+		null的对象引用或primitive数据类型的默认值。
+60.静态变量不会序列化。	
+
+61.操作文件类（java.nio.file.Paths, Files,java SE 7引入, 
+比JDK 1.0以来就使用的java.io.File类方便)
+	Path absolute = Paths.get("/home","hehe");
+	Path relative = Paths.get("home","hehe");
+	Path basePath = Paths.get("home","hehe");
+	Path只是一个目录名序列，不与磁盘目录对应，创建文件时，先创建一个路径
+	然后才调用方法创建对应的文件。
+	Path workRelative = Paths.get("work");
+	Path workPath = basePath.resolve(workRelative);
+	Path workPath = basePath.resolveSibling(workRelative);
+	Path workPath = p.relativize(r);//r相对于p的相对路径。
+	Path p = workPath.getParent();
+	Path p = workPath.getFileName();
+	Path p = workPath.getRoot();
+	与File类的交互，p.toFile()产生File对象，f.toPath()产生Path对象，其中f是file对象
+	
+	byte[] bytes = Files.readAllBytes(path);
+	String content = new String(bytes,charset);//将读入的内容当作字符串
+	List<String> lines = Files.readAllLines(path,charset);//将文件当行序列处理。
+	Files.write(path, content.getBytes(charset));//写出字符串到文件中。
+	Files.write(path, content.getBytes(charset),StandardOpenOption.APPEND);//追加写出字符串到文件中。
+	Files.write(path,lines);//写出行集合。
+	这些简便方法适用于处理中等长度的文本文件,其它情况还是应该用流或者读入器/写出器。
+	InputStream in = Files.newInputStream(path);
+	OutputStream out = Files.newOutputStream(path);
+	Reader in = Files.newBufferedReader(path);
+	Writer out = Files.newBufferedWriter(path);
+	Files.copy(fromPath, toPath);
+	Files.move(fromPath, toPath);
+	Files.delete(path);
+	boolean deleted = Files.deletIfExist(path);
+	Files.createDirectory(path);
+	Files.createDirectories(path);
+	Files.createFile(path);
+	Files.createTempFile(path);
+	Files.createTempDirectory(path);
+	
+	long fileSize = Files.size(path);
+	Files.exists,isHidden,isReadable,isWritable,isExcutable,isRegularFile
+	isDirectory,isSymbolicLink.
+	
+	BasicFileAttributes attributes = Files.readAttributes(pat,BasicFileAttributes.class);
+
+62.迭代目录中的文件。
+	旧的File类有一个方法，可以获取一个目录下的所有文件构成的数组。但是
+	当目录包含大量的文件时，性能很低。因此Files类设计了一个方法，可以产生一个Iterable
+	对象，
+	try(DirectoryStream<Paht> entries = Files.newDirectoryStream(dir,"*.java"))
+	{
+		for(Path entry: entries)
+			process entries
+	}
+	
+	如果想要访问某个目录的所有子孙成员，可以调用walkFileTree方法，并向其
+	传递一个FileVisitor类型的对象。
+	Files.walkFileTree(dir,new SimpleFileVisitor<Path>(){
+		public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException{
+			if(attrs.isDirectory)
+				System.out.println(path);
+			return FileVisitResult.CONTINUE;
+		}
+		public FileVisitResult visitFileFailed(Path path, BasicFileAttributes attrs) throws IOException{
+			return FileVisitResult.CONTINUE;
+		}
+	});
+	
+63.Zip文件系统
+	FileSystem fs = FileSystem.newFileSystem(Path.get(zipName),null);
+	建立一个文件系统，它包含Zip包中的所有文件.
+	要列出zip文档中Ｇ的所有文件。可以采用上面walkFileTree方法。只要将dir
+	改成fs.getPath("/");
+64.内存映射文件。
+	从文件中获得一个通道(channel)，通道是用于磁盘文件的一种抽象，它使
+	得可以访问诸如内存映射、文件加锁机制以及文件间快速数据传递等操作系统特性。
+	FileChannel channel = FileChannel.open(path, options);
+	然后，通过调用FileChannel类的map方法从通道获取一个ByteBuffer。
+	MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, (int)channel.size());
+	buffer.get();
+
+65.RTTI
+    在java中，所有的类型转换都是在运行时进行正确性检查的。
+    List<Shape>,容器将所有的事物当作Object持有，取出时会自动将结果转型回Shape,这是RTTI使用的基本形式，
+    这个例子中，RTTI转型并不彻底，Object转型为Shape，而不是具体的Circle,Square,Triangle。这是因为目前为此，只知道
+    List<Shape>保存的都是Shape,编译时由容器和java的泛型系统来确保，运行时类型转换来确保这一点。
+    然后到具体类型就是多态机制的事情了。
+
+    如果知道某个泛型的确切类型，就可以使用最简单的方式处理，这就引出了RTTI，使用RTTI可以查询某个Shape引用所指向的
+    对象的具体类型。
+
+    运行时，类型信息是由称为Class对象的特殊对象保存的，它包含了与类有关的信息。事实上Class对象就是用来创建类的所有'常规'对象的。
+    java使用Class对象来执行RTTI.每个类都有一个Class对象。也就是说，每当编写编译一个新类，就会产生一个Class对象（保存在一个.class文件中)
+    
+66.一个类对象的加载
+    运行程序的java虚拟机（JVM）->类加载子系统->类加载器
+    类第一次使用时，动态加载到JVM。当程序创建第一个对类的静态成员的引用时，就会加载这个类。这个证明类的构造函数也是也是静态方法。
+    java程序在它开始运行之前并非被完全加载，其各部分是在必需时才加载的。
+    类加载器首先检查这个类的Class对象是否已经加载，未加载的话，默认的类加载器根据类名查找.class文件，这个类的字节码被加载时，接受验证
+    ，确保未被破坏，并且不包含不良代码。
+    一旦某个类的Class对象被加载入内存，它就用来创建这个类的所有对象。
+
+
+
+
+
+67.一个源文件只能有一个公有类，可以有多个非公有类，源文件名必须与公有类名字相匹配。
+68.不要在构造函数中定义与实例域重名的局部变量。
+69.不要编写返回引用可变对象的访问器方法。需要返回一个可变数据域的拷贝，应该使用clone()
+70.final实例域，必须保证在每个构造函数执行之后，这个域的值被设置,后面的操作不能改变该变量的值。但其指向的对象可以状态可以改变。
+80.静态域，静态域不属于某个对象。
+81.静态方法不能向对象实施操作的方法，因为其没有this隐含参数，所以也不能访问实例域，但是可以访问类自身类的静态域。
+82.类在第一次加载的时候，将进行静态域的初始化。
+83.调用构造函数的处理过程：
+    所有数据域初始化为默认值。
+    按照在类声明中出现的次序，依次执行域初始化语句和初始化块。
+    如果构造函数第一行调用了第二个构造函数，则执行第二个构造函数主体。
+    执行这个构造函数的主体。
+84.静态导入：import static java.lang.System.* 这样就可以不用加类名前缀
+    out.println();
+85.将类放入包中：package com.hostman.corejava
+    将包中的文件放在与完整的包名匹配的子目录中。
+    编译器在编译的时候不检查目录结构，程序运行的时候检查。
+86.javac编译总是在当前的目录中查找文件，java虚拟机仅在类路径中有"."目录时才查看当前目录
+
+87.编译器定位文件比虚拟机复杂得多：
+    当引用一个类时，没有指定类所在的包时，编译器：
+    a.查找包含这个类的包，查询所有的import指令，确定其中是否包含被引用的类。
+    b.检查源文件是否比类文件新，
+    c.类从其他包中只能导入公有类，编译器很容易定位公有类所在的源文件，因为一个        源文件只能有一个公有类，且源文件名必须与公有类同名。
+    d.类从当前包中能导入非公有类，这些类可能定义在与类名不同的源文件中。
+    e.从当前包中导入一个类，编译器要搜索当前包中的所有源文件，以便确定哪个源文件定义了这个类。
+
+88.注释的抽取：
+    javadoc -d docDirectory nameOfPackage1 nameOfPackage2
+89.java中，所有的继承都是公有继承。不支持多继承。
+    java中，不需要将方法声明为虚拟方法，动态绑定是默认的处理方式。可以将方法声明为final使其不具有该特性。
+
+90.参数可变的方法：
+double max(double... values){
+    double largest = Double.MIN_VALUE;
+    for(double v:values)
+        if(v>largest)
+            largest=v;
+    return largest;
+}
+其中省略号...是java代码的一部分，double...相当于double[]数组。
+
+91.javap <options> <class>查看类信息
+
+92.内部类：通常定义在类的作用域中。
+    可以访问该类定义所在的作用域中的数据，包括私有的数据。
+    可以对同一个包中的其它类隐藏起来。 
+    方便定义一个回调函数，使用匿名内部类。
+
+    内部类使用语法：其中Inner是A的内部类
+    A a = new A();
+    A.Inner inner = a.new Inner();
+    在A的作用域之外，可以这样引用内部类。OuterClass.InnerClass
+    
+    静态内部类，只是为了把一个类隐藏在一个类的内部，不需要引用外围类对象，可以将类声明为static.
+    局部内部类，定义在方法内部的类。
+    匿名内部类，无类名称的局部内部类，
+    通常的语法格式：new InterfaceType()
+                        {
+                            methods and data
+                        };
+
+93.使用断言
+    assert x>=0
+    assert x>=0:x
+94.启用和禁用断言：
+    java -enableassertions Myapp
+    在某个类中或包中开启断言。
+    java -ea:MyClass -ea:com.mycompany.mylib Myapp
+    java -da:MyClass -da:com.mycompany.mylib Myapp
+
+95.日志记录器：Logger
+    private static final Logger myLogger =
+    Logger.getLogger("com.mycompany.mylib");
+    myLogger.setLevel(Level.INFO);
+    myLogger.log(Level.FINE,message);
+    日志记录器名具有层次结构，com.mycompany.mylib会继承com.mycompany的设置。
+    
+    修改日志管理器配置：
+    默认情况下，配置文件在jre/lib/logging.properties
+    可以使用另一个配置文件，只要将java.util.logging.config.file设置为文件的存储位置。
+    java -Djava.util.logging.config.file=configFile MainClass
+
+96.观察类的加载过程：java -verbose Myapp 
+
+97.-X选项：
+    javac -Xlint:fallthrough Myapp 检查是不是switch缺少break
+
+98.监控和管理java应用程序：
+    jconsole processID
+
+99.使用jmap获得一个堆的转储。
+    jmap -dump:format=b,file=dumpFileName processID
+    jhat dumpFileName
+100.使用-Xprof标志运行Java程序，剖析代码调用的频率，形成System.out文件。
+
+101.使用调试器：jdb
+    javac -g *.java 必须加-g选项。
+
+102.每个对象都有一个内部锁，如果一个方法用synchronized关键字声明，那么对象的
+锁将保护整个方法，也就是说，要调用该方法，线程必须获得内部的对象锁。
+内部对象锁只有一个相关条件。wait()方法添加一个线程到等待集中，notifyAll/notify方法解除等待线程的阻塞状态。
+wait,notifyAll/notify方法是Object类的final方法。所以java.util.concurrent.locks.Condition方法必须命名为await,signalAll,signal以便他不会与那些方法发生冲突
+
+103.volatile域，（只赋值不完成其它操作，可以避免使用锁）
+    仅仅为了读写一个或两个实例域就使用同步，显得开销过大。
+    a.多处理器的计算机能够暂时的在寄存器或本地缓冲区中保存内存中的值，结果是
+    运行在不同处理器上的线程可能在同一个内存位置取到不同的值。
+    b.编译器可以优化指令执行顺序，但是编译器假定内存的值仅仅在代码中有显式修改指令时才改变。然而内存的值可以被另一个线程改变！
+    volatile关键字为实例域的同步访问提供了一个免锁机制。
+    volatile域告诉编译器和虚拟机这个域是可能另一个线程并发更新的。
+
+104.使用锁，volatile修饰符，final修饰符，可以安全的访问（读取）一个共享域。
+
+
+

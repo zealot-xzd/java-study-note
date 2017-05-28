@@ -1,0 +1,68 @@
+、介绍：
+简单日记门面(simple logging Facade for java)SLF4J是为各种loging APIs提供一个简单统一的
+接口，从而使得最终用户能够在部署的时候配置自己希望的loging APIs实现。 Logging API实现既可以
+选择直接实现SLF4J接的loging APIs如： NLOG4J、SimpleLogger。也可以通过SLF4J提供的API实现
+来开发相应的适配器如Log4jLoggerAdapter、JDK14LoggerAdapter。在SLF4J发行版本中包含了几个
+jar包，如slf4j-nop.jar, slf4j-simple.jar, slf4j-log4j12.jar, slf4j-log4j13.jar,
+slf4j-jdk14.jar and slf4j-jcl.jar通过这些jar文件可以使编译期与具体的实现脱离。或者说可以
+灵活的切换
+二、官方站点
+官方的网站：http://www.slf4j.org/manual.html
+三、为何使用slf4j?
+我们在开发过程中可能使用各种log，每个Log有不同的风格、布局，如果想灵活的切换那么slf4j是比较好的
+选择。
+四、如何使用slf4j
+下边一段程序是经典的使用slf4j的方法.
+
+ 
+import  org.slf4j.Logger;
+import  org.slf4j.LoggerFactory;
+public   class  Wombat  {
+     final  Logger logger  =  LoggerFactory.getLogger(Wombat. class );
+    Integer t;
+    Integer oldT;
+     public   void  setTemperature(Integer temperature)  {
+        oldT  =  t;
+        t  =  temperature;
+        logger.error( " Temperature set to {}. Old temperature was {}. " , t, oldT);
+         if  (temperature.intValue()  >   50 )  {
+            logger.info( " Temperature has risen above 50 degrees. " );
+        }
+    }
+     public   static   void  main(String[] args)  {
+        Wombat wombat  =   new  Wombat();
+        wombat.setTemperature( 1 );
+        wombat.setTemperature( 55 );
+    }
+}
+
+
+下边介绍一下运行上边程序的过程。
+1,编译上边的程序，需要classpath中加入slf4j-api-1.4.1.jar文件
+2,运行时，需要classpath中加上slf4j-simple-1.4.1.jar
+运行得到结果:
+----------------------------
+0 [main] ERROR Wombat - Temperature set to 1. Old temperature was null.
+0 [main] ERROR Wombat - Temperature set to 55. Old temperature was 1.
+0 [main] INFO Wombat - Temperature has risen above 50 degrees.
+这个是simple log风格，
+
+3,切换：如果想切换到jdk14的log的风格，只需要把slf4j-simple-1.4.1.jar
+从classpath中移除，同时classpath中加入slj4j-jdk14-1.4.1.jar
+这时的运行结果:
+---------------------------------------------------
+2007-7-9 10:40:15 Wombat setTemperature
+严重: Temperature set to 1. Old temperature was null.
+2007-7-9 10:40:16 Wombat setTemperature
+严重: Temperature set to 55. Old temperature was 1.
+2007-7-9 10:40:16 Wombat setTemperature
+信息: Temperature has risen above 50 degrees.
+已经变成jdk14的log风格了。
+4,再次切换到log4j
+同样移除slj4j-jdk14-1.4.1.jar，加入slf4j-log4j12-1.4.1.jar，同时加入log4j-1.2.x.jar
+加入log4j.properties。得到显示结果:
+---------------------------------------
+10:42:27,328 ERROR Wombat: Temperature set to 1. Old temperature was null.
+10:42:27,328 ERROR Wombat: Temperature set to 55. Old temperature was 1.
+10:42:27,328  INFO Wombat: Temperature has risen above 50 degrees.
+在不同的风格中切换只需要在部署期切换类库就可以了，和开发时无关

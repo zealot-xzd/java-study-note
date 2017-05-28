@@ -1,0 +1,134 @@
+jdb，意即Java Debugger，主要用来帮助我们查找并修复Java程序中的bug。
+
+用法摘要
+
+jdb的用法摘要如下：
+
+jdb [ options ] [ class ] [ arguments ]
+options
+命令行选项，详见下面的介绍。
+class
+开始调试的类名称。
+arguments
+传递给class的main()方法的参数。
+描述
+
+Java调试器，jdb，是一个Java类的简单调试器。它是Java平台调试器体系结构的一个演示，该体系结构提供对本地或远程JVM的检查和调试。
+
+开始一个jdb会话
+
+我们有许多种方式来启动一个jdb会话。最常用的方法是jdb以待调试的应用程序的main类来运行一个新的JVM。在命令行中，我们可以替换命令中的java为jdb，从而实现该目的。例如，如果你的应用程序main类为MyClass，你可以使用如下jdb命令来调试它：
+
+jdb MyClass
+当使用这种方式启动时，jdb将调用另一个带任意指定参数的JVM，加载指定的类，并在执行这些类的第一个指令之前停止VM。
+
+使用jdb的另一种方式是将其附加到已经运行的JVM中，想要使用jdb调试的JVM必须使用下列选项参数来启动。这些选项参数会加载过程调试库，并指定创建哪种连接。
+
+-agentlib:jdwp=transport=dt_shmem,server=y,suspend=n
+例如，下列命令将会运行MyClass应用程序，并允许jdb稍后连接它。
+java -agentlib:jdwp=transport=dt_shmem,address=jdbconn,server=y,suspend=n MyClass
+你可以使用如下命令将jdb附加到JVM：
+jdb -attach jdbconn
+注意，在这个例子中，我们并没有在jdb命令中中指定"MyClass"，因为jdb连接到的是一个现有的虚拟机，而不是运行一个新的虚拟机。我们有许多种方式可以将调试器连接到虚拟机，而jdb支持所有的这些方式。Java平台调试器体系结构有一个与这些连接选项相关的附加文档。关于启动一个J2SE 1.4.2或更早版本的虚拟机，并与jdb进行搭配使用的相关信息，请查看1.4.2文档。
+基本的jdb命令
+
+以下是基本的jdb命令列表。Java调试器支持jdb帮助命令列出的其他命令。
+help, or ?
+最重要的jdb命令，用于显示带简要说明的公认的命令列表。
+run
+在启动jdb，并且设置任何必要的断点之后，你可以使用此命令来启动待调试的应用程序的执行。只有使用jdb运行待调试的应用程序时(与附加到现有的虚拟机的做法相反)，该命令才可用。
+cont
+在一个断点、异常或者步骤之后，继续待调试的应用程序的执行。
+print
+显示Java对象和原生值。 对于原生类型的变量或字段而言，将会打印实际的值；对于对象而言，将打印一个简单的描述。请查看下方的dump命令以获取关于对象的更多信息。
+注意: 为了显示本地变量，包含的类必须使用javac -g 选项进行编译。
+
+print支持多种包含方法调用的简单Java表达式，例如：
+
+print MyClass.myStaticField
+print myObj.myInstanceField
+print i + j + k (i, j, k are primities and either fields or local variables)
+print myObj.myMethod() (if myMethod returns a non-null)
+print new java.lang.String("Hello").length()
+dump
+对于原生值而言，该命令等同于print。对于对象而言，它会打印对象中每个定义的字段的当前值。静态字段和实例字段均包含在内。
+threads
+列出当前正在运行的线程，并打印出每个线程的名称和当前状态，以及可用于其他命令的索引值。例如：
+
+4. (java.lang.Thread)0x1 main      running
+在这个示例中，线程的索引为4，该线程是java.lang.Thread的一个实例，线程名称为"main"，该线程正在运行。
+
+thread
+选择一个线程作为当前线程。许多jdb命令都是基于当前线程的设置。该线程可以用上面threads命令中描述的索引值来指定。
+where
+不带参数的where将输出当前线程的堆栈信息。where all 将输出当前线程组中所有线程的堆栈信息。where threadindex 将输出指定索引的线程的堆栈信息。
+如果当前线程被挂起(通过诸如一个断点的事件或挂起命令来实现)，使用print和dump变量将打印本地变量和字段。向上向下命令可以选择当前的栈帧。
+
+断点
+
+在jdb中，我们可以在指定行号或方法的第一个指令处设置断点，例如：
+
+stop at MyClass:22 (在MyClass第22行源代码的第一个指令处设置一个断点)
+stop in java.lang.String.length (在java.lang.String.length方法的开始位置设置一个断点)
+stop in MyClass.<init> (<init>标识MyClass的构造函数)
+stop in MyClass.<clinit> (<clinit>标识MyClass的静态初始化代码)
+如果一个方法被重载，你也必须指定它的参数类型，以便于断点能够选择适当的方法。例如：MyClass.myMethod(int,java.lang.String)，或者MyClass.myMethod()。
+
+我们可以使用语法类似于clear MyClass:45的clear命令来删除断点。使用不带参数的clear命令可以显示当前设置的所有断点列表。使用cont命令可以继续向下执行。
+
+步进
+
+step命令用于向前执行到当前栈帧或被被调用方法的下一行，next命令用于向前执行到当前栈帧的下一行。
+
+异常
+
+如果发生了一个没有被catch语句捕获的异常，虚拟机通常会打印该异常的追踪信息并退出程序。当运行于jdb之下时，无论如何，抛出的异常都会被控制返回到jdb上，然后，你可以使用jdb来诊断异常的原因。
+
+使用catch命令让待调试的应用程序在其他抛出异常的位置暂停，例如：catch java.io.FileNotFoundException或catch mypackage.BigTroubleException。指定类(或子类)实例的任何异常都将在异常的抛出位置暂停应用程序。
+
+ignore命令用于取消上一个catch命令的作用效果。
+
+注意:ignore命令不会导致待调试的虚拟机忽略指定的异常，而是仅作用于调试器。
+
+命令行选项
+
+当你使用在命令行中使用jdb时，jdb接受大多数与java命令相同的选项参数，包括-D，-classpath，和-X<option>等。
+
+jdb接受如下额外选项：
+
+-help
+显示帮助信息。
+-sourcepath <dir1:dir2:...>
+指定源代码文件的搜索路径。如果此选项未指定，则默认为"."。
+-attach <address>
+使用默认的连接机制，将调试器附加到之前运行的虚拟机上。
+-listen <address>
+使用标准器连接器在指定的地址等待正在运行的虚拟机进行连接。
+-listenany
+使用标准连接器在任何可用的地址等待正在运行的虚拟机进行连接。
+-launch
+当启动jdb时，立即启动待调试的应用程序。此选项不需要使用运行命令。待调试的应用程序将会运行，然后在加载初始化应用类之前暂停。 此时，你可以设置任何必要的断点，然后使用cont来继续执行。
+-listconnectors
+列出在此虚拟机上可用的连接器。
+-connect <connector-name>:<name1>=<value1>,...
+使用命名的连接器和列出的参数值连接目标虚拟机。
+-dbgtrace [flags]
+打印正在调试的jdb的相关信息。
+-tclient
+以Java HotSpot虚拟机(客户端)模式运行应用程序。
+-tserver
+以Java HotSpot虚拟机(服务器)模式运行应用程序。
+-Joption
+传递选项参数给Java虚拟机，并用于运行jdb。(Java虚拟机程序的选项参数使用运行命令来传递。) 例如，-J-Xms48m 设置启动内存为48MB。
+其他选项支持连接调试器的替代机制和虚拟机调试。Java平台调试器体系结构提供了关于连接方案的附加文档。
+
+转发到被调试的进程的选项参数
+
+-v -verbose[:class|gc|jni]
+启用冗余模式。
+-D<name>=<value>
+设置系统属性。
+-classpath <directories separated by ":">
+列出用于查找类的目录。
+-X<option>
+非标准的目标虚拟机选项。

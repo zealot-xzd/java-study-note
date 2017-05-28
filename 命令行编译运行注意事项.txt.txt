@@ -1,0 +1,21 @@
+eclipse 下找不到或无法加载主类的解决办法
+
+
+a)  有时候 Eclipse 会发神经，好端端的 project 就这么编译不了了，连 Hello World 都会报“找不到或无法加载主类”的错误，我已经遇到好几次了，以前是懒得深究就直接重建project了，但遇到次数多了必须深究下了，现总结几种解决方案，大家根据自己的情况逐一尝试即可。
+1、是因为.java文件不在项目的src路径内，也就是说源代码未被eclipse编译，字节码不存在无法运行了在项目名上右键 -> Builder Path -> Configure Build Path -> 选择Source面板 再点Add Folder, 把源代码所在的包路径的上层目录加进来，而且如果你是把两个类写在一个文件里的话,你在右键选择Run As Java Appication 的时候,要把光标至于包括main方法的类上
+
+2、最快捷的解决办法是，打开带有main函数的类，ctrl +A （全选）---> ctrl +X（剪切）-----> ctrl+S(保存)--->关闭---->再打开--->ctrl +V (粘贴) ---->OK;一句话就是粘出去 关闭 再粘进来
+3、重建Project也行。
+4、项目的Java Build Path中的Libraries中也许某个jar包是不可用的，显示红色叉叉。这说明系统找不到这个这个jar文件，把这个jar删除或者重新加载进来即可。
+5、如果上述不行，大家直接在 cmd 下 javac 然后 java 运行试试，如果这都报错，那是你的 jdk 或者 os 环境有问题了。
+
+b)  javac能编译，但是java运行不了，可能是环境变量配置不对
+    环境变量配置：
+    JAVA_HOME     D:\Java\jdk1.0.8
+    CLASSPATH     .;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;
+    PATH                 %JAVA_HOME%\bin;%JAVA_HOME%\jre\bin
+
+    可能是寻找class的路径不对，还可能是文件名没有带包名
+    java -cp ../.. hellojava.hello   /*参数-cp(-classpath)的意思是
+    会在-cp指定的位置找你要运行的class文件, hellojava.hello是带包名的类名*/ 
+
