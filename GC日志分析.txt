@@ -1,0 +1,112 @@
+ JVM的GC日志的主要参数包括如下几个：
+
+-XX:+PrintGC 输出GC日志
+
+-XX:+PrintGCDetails 输出GC的详细日志
+
+-XX:+PrintGCTimeStamps 输出GC的时间戳（以基准时间的形式）
+
+-XX:+PrintGCDateStamps 输出GC的时间戳（以日期的形式，如 2013-05-04T21:53:59.234+0800）
+
+-XX:+PrintHeapAtGC 在进行GC的前后打印出堆的信息
+
+-Xloggc:../logs/gc.log 日志文件的输出路径
+
+在我做了如下的设置
+Java代码  收藏代码
+
+    -XX:+PrintGCDetails -Xloggc:../logs/gc.log -XX:+PrintGCTimeStamps  
+
+ 
+
+以后打印出来的日志为：
+Java代码  收藏代码
+
+    0.756: [Full GC (System) 0.756: [CMS: 0K->1696K(204800K), 0.0347096 secs] 11488K->1696K(252608K), [CMS Perm : 10328K->10320K(131072K)], 0.0347949 secs] [Times: user=0.06 sys=0.00, real=0.05 secs]  
+    1.728: [GC 1.728: [ParNew: 38272K->2323K(47808K), 0.0092276 secs] 39968K->4019K(252608K), 0.0093169 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]  
+    2.642: [GC 2.643: [ParNew: 40595K->3685K(47808K), 0.0075343 secs] 42291K->5381K(252608K), 0.0075972 secs] [Times: user=0.03 sys=0.00, real=0.02 secs]  
+    4.349: [GC 4.349: [ParNew: 41957K->5024K(47808K), 0.0106558 secs] 43653K->6720K(252608K), 0.0107390 secs] [Times: user=0.03 sys=0.00, real=0.02 secs]  
+    5.617: [GC 5.617: [ParNew: 43296K->7006K(47808K), 0.0136826 secs] 44992K->8702K(252608K), 0.0137904 secs] [Times: user=0.03 sys=0.00, real=0.02 secs]  
+    7.429: [GC 7.429: [ParNew: 45278K->6723K(47808K), 0.0251993 secs] 46974K->10551K(252608K), 0.0252421 secs]  
+
+ 
+
+我们取倒数第二条记录分析一下各个字段都代表了什么含义
+Java代码  收藏代码
+
+    5.617（时间戳）: [GC（Young GC） 5.617（时间戳）: [ParNew（使用ParNew作为年轻代的垃圾回收期）: 43296K（年轻代垃圾回收前的大小）->7006K（年轻代垃圾回收以后的大小）(47808K)（年轻代的总大小）, 0.0136826 secs（回收时间）] 44992K（堆区垃圾回收前的大小）->8702K（堆区垃圾回收后的大小）(252608K)（堆区总大小）, 0.0137904 secs（回收时间）] [Times: user=0.03（Young GC用户耗时） sys=0.00（Young GC系统耗时）, real=0.02 secs（Young GC实际耗时）]  
+
+ 
+
+我们再对数据做一个简单的分析
+
+从最后一条GC记录中我们可以看到 Young GC回收了 45278-6723=38555K的内存
+
+Heap区通过这次回收总共减少了 46974-10551=36423K的内存。
+
+38555-36423=2132K说明通过该次Young GC有2132K的内存被移动到了Old Gen，
+
+ 
+
+我们来验证一下
+
+在最后一次Young GC的回收以前 Old Gen的大小为8702-7006=1696
+
+回收以后Old Gen的内存使用为10551-6723=3828
+
+Old Gen在该次Young GC以后内存增加了3828-1696=2132K 与预计的相符
+
+ 
+
+重新设置GC日志的输出
+
+ 
+Java代码  收藏代码
+
+    -XX:+PrintGCDetails  
+    -XX:+PrintHeapAtGC  
+    -XX:+PrintGCDateStamps  
+    -XX:+PrintTenuringDistribution  
+    -verbose:gc  
+    -Xloggc:gc.log  
+
+后可以看到进行GC前后的堆内存信息 
+Java代码  收藏代码
+
+    {Heap before GC invocations=1 (full 0):  
+     PSYoungGen      total 152896K, used 131072K [0x00000000f5560000, 0x0000000100000000, 0x0000000100000000)  
+      eden space 131072K, 100% used [0x00000000f5560000,0x00000000fd560000,0x00000000fd560000)  
+      from space 21824K, 0% used [0x00000000feab0000,0x00000000feab0000,0x0000000100000000)  
+      to   space 21824K, 0% used [0x00000000fd560000,0x00000000fd560000,0x00000000feab0000)  
+     PSOldGen        total 349568K, used 0K [0x00000000e0000000, 0x00000000f5560000, 0x00000000f5560000)  
+      object space 349568K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000f5560000)  
+     PSPermGen       total 26432K, used 26393K [0x00000000d0000000, 0x00000000d19d0000, 0x00000000e0000000)  
+      object space 26432K, 99% used [0x00000000d0000000,0x00000000d19c64a0,0x00000000d19d0000)  
+    2013-05-05T23:16:10.480+0800: 5.228: [GC  
+    Desired survivor size 22347776 bytes, new threshold 7 (max 15)  
+     [PSYoungGen: 131072K->8319K(152896K)] 131072K->8319K(502464K), 0.0176346 secs] [Times: user=0.03 sys=0.00, real=0.02 secs]   
+    Heap after GC invocations=1 (full 0):  
+     PSYoungGen      total 152896K, used 8319K [0x00000000f5560000, 0x0000000100000000, 0x0000000100000000)  
+      eden space 131072K, 0% used [0x00000000f5560000,0x00000000f5560000,0x00000000fd560000)  
+      from space 21824K, 38% used [0x00000000fd560000,0x00000000fdd7ff78,0x00000000feab0000)  
+      to   space 21824K, 0% used [0x00000000feab0000,0x00000000feab0000,0x0000000100000000)  
+     PSOldGen        total 349568K, used 0K [0x00000000e0000000, 0x00000000f5560000, 0x00000000f5560000)  
+      object space 349568K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000f5560000)  
+     PSPermGen       total 26432K, used 26393K [0x00000000d0000000, 0x00000000d19d0000, 0x00000000e0000000)  
+      object space 26432K, 99% used [0x00000000d0000000,0x00000000d19c64a0,0x00000000d19d0000)  
+    }  
+
+ 
+Java代码  收藏代码
+
+    [0x00000000f5560000,0x00000000f5560000,0x00000000fd560000)  
+
+这种形式的日志有两种意义： 
+当这种日志出现在generation的详细信息里的时候，三个数字在HotSpot里分别称为low_boundary、high、high_boundary。 
+low_boundary: reserved space的最低地址边界；通常也跟“low”相等，这是commited space的最低地址边界 
+high: commited space的最高地址边界 
+high_boundary: reserved space的最高地址边界。 
+
+[low_boundary, high_boundary)范围内的就是reserved space，这个space的大小就是max capacity。 
+[low, high)范围内的就是commited space，而这个space的大小就是current capacity（当前容量），简称capacity。 
+capacity有可能在一对最小值和最大值之间浮动。最大值就是上面说的max capacity。 

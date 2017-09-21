@@ -1,0 +1,98 @@
+1.  坐标：groupId:artifactId:version:packaging:classifier 前三个是必要的
+2.  依赖配置：
+      <dependencies>
+            <dependency>
+            <groupId></groupId>
+            <artifactId></artifactId>
+            <version></version>
+            <type></type>
+            <scope></scope>
+            <systemPath></systemPath>
+            <optional></optional>
+            <exclusions>
+                <exclusion></exclusion>
+            </exclusions>
+            <classifier></classifier>
+        </dependency>
+      </dependencies>
+3.  传递性依赖：
+    有了传递性依赖，在使用某个构件的时候就不用考虑此构件依赖了什么，也不用担心
+    引入多余的依赖，maven会解析各个直接依赖的POM，将那些必要的间接依赖，以传递依赖的
+    方式引入到当前项目。
+
+    当第二直接依赖的范围是compile时，传递性依赖的范围与第一直接依赖的范围一致。
+    当第二直接依赖的范围是runtime时，传递性依赖的范围与第一直接依赖的范围一致，但compile除外，此时传递性依赖范围是runtime
+    当第二直接依赖的范围是test时，依赖不传递。
+    当第二直接依赖的范围是provided时，只传递第一直接依赖也为provided的依赖，且传递性依赖的范围也是provided
+
+4.  依赖的调解：
+    A->B->C-X(1.0), A->D->X(2.0), X是A的传递性依赖。依据最近者优先原则选择X(2.0)版本。
+    A->B-Y(1.0), A->C->Y(2.0),当路径长度一样是，按照先声明者优先原则。
+
+5.  排除依赖：
+    传递性依赖会给面目隐式地引入很多依赖，虽然简化了依赖，但有时候也会带来问题：如项目引入了第三方库，而这个第三方库依赖了一个
+    库的snapshot版本，基于稳定性的考虑应该排除这个依赖。或者由于版权的问题，库中找不到。
+    这时都应当排除依赖，在项目中直接声明依赖
+
+      <dependencies>
+        <dependency>
+            <groupId></groupId>
+            <artifactId></artifactId>
+            <version></version>
+            <exclusions>
+                <exclusion>
+                    <groupId>a.b.c</groupId>
+                    <artifactId>d</artifactId> （不需要指明版本)
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>a.b.c</groupId>
+            <artifactId>d</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+      </dependencies>
+
+6.  优化依赖：
+    查看当前项目的以解析依赖：mvn dependency:list
+    查看依赖引入的路径：mvn dependency:tree
+    分析依赖：mvn dependency analyze    （只能分析编译主代码和测试代码的依赖）
+        java import声明用到的类都是通过直接依赖引入的，（当没用直接声明依赖时：mvn dependency:analyze会
+        提示used undeclared dependencies foud警告）
+        最好显示声明项目中**直接**用到的依赖
+7.  Maven人聚合功能：
+    一般一个项目会有多个模块，maven的聚合功能能将各个模块聚合在一起
+    假设有连个项目A,B，我们希望一次就构建两个项目，而不是到两个模块
+    下分别支持mvn命令，maven的聚合（或者叫多模块）就是为了解决这需求
+
+    为了达到这个目的，我们需要创建一个额外的模块（聚合模块），通过这个
+    模块来构建整个项目的所有模块。聚合模块，本身也是一个maven项目，必须
+    有自己的pom，不过有其特殊的地方。
+    <project>
+        <modelVersion></modelVersion>
+        <groupId>a.b.c</groupId>
+        <artifactId>aggregator</artifactId>
+        <version>1.0.0</version>
+        <packaging>pom</packaging> //注意
+        <name>aggregator</name>
+        <modules>                   //注意
+            <module>A</module>      //标签的值是当前pom的相对路径
+            <module>B</module>
+        </modules>
+    一般将需要一次构建的模块放在聚合模块中，使他们成为聚合模块的子目录
+
+8.  maven的继承：
+    为了配置一致性和减少重复的配置，maven使用了继承的功能
+
+9.  依赖管理
+
+10. 插件的管理
+
+
+
+
+    
+
+
+    
+
